@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(Project)
 admin.site.register(Issue)
 admin.site.register(User_Profile)
+admin.site.register(Labels)

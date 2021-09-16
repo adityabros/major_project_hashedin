@@ -1,4 +1,8 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.password_validation import validate_password
+
 
 from .models import *
 
@@ -7,13 +11,106 @@ from .models import *
 class IssueSerializer(serializers.ModelSerializer):
    class Meta:
        model = Issue
-       fields = ('description', 'type', 'status','title','project','reporter','assignee')
+       fields = ('id','description', 'type', 'status','title','project','reporter','assignee','labels')
 
     #    fields = ('__all__')
 
+class UpdateIssueSerializer(serializers.ModelSerializer):
+
+    status_codes = {'open':1,'in_progress':2,'in_review':3,'code_complete':4,'done':5} 
+    
+    def update(self, issue, upd_data):
+        
+        current_status = self.status_codes[issue.status]
+        new_status = self.status_codes[upd_data['status']]
+        
+        
+        #avoid status and updating all other fields as we have handled status ourself in different way
+        
+        for k, v in upd_data.items():
+           if k != "status" and k != 'labels':
+              setattr(issue, k, v)
+           elif k == 'labels':
+              for lbl in v:
+                 issue.labels.add(lbl)
+               
+        issue.save()
+        status_diff = new_status-current_status
+        if new_status < current_status or  status_diff in [1,0]:
+           issue.status = upd_data['status']
+           issue.save()
+           return issue
+        else:
+           raise serializers.ValidationError('Cannot Jump more than 1 on statuses') 
+        
+
+    class Meta:
+        model = Issue
+        fields = ('id','description', 'type', 'status','title','project','reporter','assignee','labels')
+
 class ProjectSerializer(serializers.ModelSerializer):
-   issues = IssueSerializer(many=True,read_only=True) 
+   issues = IssueSerializer(many=True,read_only=True)
+    
    class Meta:
        model = Project
        fields = ('description', 'title', 'creator','issues')
     #    fields = ('__all__')
+
+class UpdateProjectSerializer(serializers.ModelSerializer):
+     
+    class Meta:
+        model = Project
+        fields = ('title', 'description')
+
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+            required=True,
+            validators=[UniqueValidator(queryset=User.objects.all())]
+            )
+
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True}
+        }
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
+        )
+
+        
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+
+class UserSerializer(serializers.ModelSerializer):
+    Project = ProjectSerializer(many=True,read_only=True)
+    class Meta:
+        model = User
+        fields = ('username','Project','email')
+
+class LabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Labels
+        fields = ('name',)
+
+class WatcherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Watcher
+        fields = ('user','issue')

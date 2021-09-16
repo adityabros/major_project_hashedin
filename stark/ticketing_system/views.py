@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets,generics
+from django.contrib.auth.models import User
 
 from . import serializers,models
 from django.db.models import Q
-
+from rest_framework.permissions import AllowAny 
 # Create your views here.
 
 
@@ -21,6 +22,15 @@ class ProjectViewSet(viewsets.ModelViewSet):
         elif title:
             queryset = queryset.filter(title__iexact=title)
         return queryset
+    
+   def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.request.method == 'PUT':
+            serializer_class = serializers.UpdateProjectSerializer
+
+        return serializer_class
+
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -39,3 +49,33 @@ class IssueViewSet(viewsets.ModelViewSet):
         elif title:
             queryset = queryset.filter(title__iexact=title)
         return queryset
+
+   def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.request.method == 'PUT':
+            serializer_class = serializers.UpdateIssueSerializer
+
+        return serializer_class 
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = serializers.RegisterSerializer
+
+class UserViewSet(viewsets.ModelViewSet):
+   queryset = User.objects.all()
+   serializer_class = serializers.UserSerializer
+
+   def get_queryset(self):
+        queryset = User.objects.all()
+        
+        return queryset
+
+class LabelViewSet(viewsets.ModelViewSet):
+   queryset = models.Labels.objects.all()
+   serializer_class = serializers.LabelSerializer
+
+class WatcherViewSet(viewsets.ModelViewSet):
+   queryset = models.Watcher.objects.all()
+   serializer_class = serializers.WatcherSerializer

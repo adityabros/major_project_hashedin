@@ -27,6 +27,9 @@ router = routers.DefaultRouter()
 
 router.register(r'project', views.ProjectViewSet)
 router.register(r'issues', views.IssueViewSet)
+router.register(r'users', views.UserViewSet)
+router.register(r'labels', views.LabelViewSet)
+router.register(r'watcher', views.WatcherViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
