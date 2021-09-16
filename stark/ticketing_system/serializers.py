@@ -21,7 +21,12 @@ class UpdateIssueSerializer(serializers.ModelSerializer):
     status_codes = {'open':1,'in_progress':2,'in_review':3,'code_complete':4,'done':5} 
     
     def update(self, issue, upd_data):
+        role = self.context['request'].user.user_profile.role
+        user_id = self.context['request'].user.id
         
+        if role == "standard" and issue.assignee.id != user_id:
+          raise serializers.ValidationError({"msg": "User not authorized to update Issues"})
+
         current_status = self.status_codes[issue.status]
         new_status = self.status_codes[upd_data['status']]
         
@@ -70,7 +75,16 @@ class UpdateIssueSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
    issues = IssueSerializer(many=True,read_only=True)
-    
+
+   def create(self, validated_data):
+        role = self.context['request'].user.user_profile.role
+       
+       #Only admin can create projects
+
+        if role != "admin":
+          raise serializers.ValidationError({"msg": "User not authorized to create projects"}) 
+
+        return Project.objects.create(**validated_data) 
    class Meta:
        model = Project
        fields = ('description', 'title', 'creator','issues')
@@ -159,11 +173,13 @@ class user_profileSerializer(serializers.ModelSerializer):
        
        role = self.context['request'].user.user_profile.role
        
+       #Only admin can assign roles
+
        if role != "admin":
           raise serializers.ValidationError({"msg": "User not authorized"})
        user_profile.role = upd_data['role']
        user_profile.save()
-         
+
        return user_profile
 
 
