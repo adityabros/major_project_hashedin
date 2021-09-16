@@ -27,15 +27,19 @@ class getAllTestProject(TestCase):
         "name":"Test Label"
     } 
 
+    test_watcher_data = {
+        "user":2,
+        "issue":1,
+    }
 
     def setUp(self):
         
         user = User.objects.create(username="admin2",password="passsword")
         
-        models.Project.objects.create(title='Test 1', description='My first test', creator=user)
-        models.Labels.objects.create(name="Dummy Label")
+        proj = models.Project.objects.create(title='Test 1', description='My first test', creator=user)
+        lbl = models.Labels.objects.create(name="Dummy Label")
+        # models.Issue.objects.create(title='Test 1', description='My first test', type="BUG",status="OPEN",project=proj,reporter=user,assignee=user)
         
-
     def test_all_GET(self):
         
         client = Client()
@@ -105,6 +109,12 @@ class getAllTestProject(TestCase):
 
         response = client.post('/ticketing_system/labels/', data=self.test_label_data, format="json")
         
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #posting in Watcher
+
+        response = client.post('/ticketing_system/watcher/', data=self.test_watcher_data, format="json")
+        # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
  
