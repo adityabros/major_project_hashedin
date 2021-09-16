@@ -22,8 +22,25 @@ class getAllTest(TestCase):
         # get data from db
         projects = models.Project.objects.all()
         serializer = serializers.ProjectSerializer(projects, many=True)
-        
+        print(" res data = ",response.data)
+        print(" ser data = ",serializer.data)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+
+    def test_post_in_project(self):
+        
+        self.project_data = {
+            "title": 'Dummy Project',
+            "description": 'Dummy testing',
+            "creator": 2
+        }
+
+        client = Client()
+
+        response = client.post('/ticketing_system/project/', data=self.project_data, format="json")
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
 
