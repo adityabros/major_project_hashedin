@@ -22,7 +22,10 @@ class getAllTestProject(TestCase):
             "reporter":2,
             "assignee":2,
             "labels":[2]
-        } 
+        }
+    test_label_data = {
+        "name":"Test Label"
+    } 
 
 
     def setUp(self):
@@ -95,6 +98,12 @@ class getAllTestProject(TestCase):
         #posting in Issues
 
         response = client.post('/ticketing_system/issues/', data=self.test_issue_data, format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #posting in Labels
+
+        response = client.post('/ticketing_system/labels/', data=self.test_label_data, format="json")
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
