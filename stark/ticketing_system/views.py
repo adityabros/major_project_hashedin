@@ -83,3 +83,8 @@ class WatcherViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(viewsets.ModelViewSet):
    queryset = models.Comments.objects.all()
    serializer_class = serializers.CommentsSerializer
+
+class user_profileViewSet(viewsets.ModelViewSet):
+   queryset = models.User_Profile.objects.all()
+   serializer_class = serializers.user_profileSerializer
+   

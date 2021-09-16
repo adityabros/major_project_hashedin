@@ -1,7 +1,8 @@
 from stark_industries.settings import LANGUAGE_CODE
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Project(models.Model):
     description = models.TextField()
@@ -46,8 +47,13 @@ class Issue(models.Model):
 
 class User_Profile(models.Model):
 
-    user = models.ForeignKey(User,on_delete=models.PROTECT)
-    role = models.CharField(max_length=15)
+    user = models.OneToOneField(User,on_delete=models.PROTECT,related_name='user_profile')
+    roles = [
+        ('admin', 'Admin'),
+        ('pm', 'Project Manager'),
+        ('standard', 'Standard'),
+        ]
+    role = models.CharField(max_length=15,choices=roles,default="admin")
 
 class Watcher(models.Model):
 
@@ -69,7 +75,19 @@ class Comments(models.Model):
     created_on = models.DateTimeField(auto_now_add=True,null=True)
     updated_on = models.DateTimeField(null=True)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
-    
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        User_Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.user_profile.save()
+    except:
+        pass
+
 #Event Log
 #Comment
 #Label - many to many with Issues

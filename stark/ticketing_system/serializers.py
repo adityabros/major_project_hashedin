@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
+from rest_framework.fields import CurrentUserDefault
 
 
 from .models import *
@@ -145,3 +146,24 @@ class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
         fields = ('author','text','issue')
+
+class user_profileSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = User_Profile
+        fields = ('user','role')
+   
+    def update(self, user_profile, upd_data):
+      #  print(self.__dir__())
+       
+       role = self.context['request'].user.user_profile.role
+       
+       if role != "admin":
+          raise serializers.ValidationError({"msg": "User not authorized"})
+       user_profile.role = upd_data['role']
+       user_profile.save()
+         
+       return user_profile
+
+
