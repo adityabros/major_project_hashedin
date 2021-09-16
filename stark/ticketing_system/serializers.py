@@ -140,4 +140,8 @@ class event_logsSerializer(serializers.ModelSerializer):
     class Meta:
         model = event_logs
         fields = ('updated_field','timestamp','previous_value','new_value','issue')
-         
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = ('author','text','issue')

@@ -79,3 +79,7 @@ class LabelViewSet(viewsets.ModelViewSet):
 class WatcherViewSet(viewsets.ModelViewSet):
    queryset = models.Watcher.objects.all()
    serializer_class = serializers.WatcherSerializer
+
+class CommentsViewSet(viewsets.ModelViewSet):
+   queryset = models.Comments.objects.all()
+   serializer_class = serializers.CommentsSerializer

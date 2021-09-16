@@ -30,6 +30,7 @@ router.register(r'issues', views.IssueViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'labels', views.LabelViewSet)
 router.register(r'watcher', views.WatcherViewSet)
+router.register(r'comments', views.CommentsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

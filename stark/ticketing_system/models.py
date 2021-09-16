@@ -61,8 +61,15 @@ class event_logs(models.Model):
     previous_value = models.CharField(max_length=20)
     new_value = models.CharField(max_length=20)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
-    
 
+class Comments(models.Model):
+    
+    author = models.ForeignKey(User,on_delete=models.CASCADE)
+    text = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True,null=True)
+    updated_on = models.DateTimeField(null=True)
+    issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
+    
 #Event Log
 #Comment
 #Label - many to many with Issues
