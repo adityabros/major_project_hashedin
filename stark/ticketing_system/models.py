@@ -54,6 +54,15 @@ class Watcher(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
 
+class event_logs(models.Model):
+
+    updated_field = models.CharField(max_length=20)
+    timestamp = models.DateTimeField(auto_now=True)
+    previous_value = models.CharField(max_length=20)
+    new_value = models.CharField(max_length=20)
+    issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
+    
+
 #Event Log
 #Comment
 #Label - many to many with Issues

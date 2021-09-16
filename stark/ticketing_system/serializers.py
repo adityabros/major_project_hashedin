@@ -25,15 +25,34 @@ class UpdateIssueSerializer(serializers.ModelSerializer):
         new_status = self.status_codes[upd_data['status']]
         
         
+        
+        if issue.description != upd_data['description']:
+           #create event
+           event_log = event_logs.objects.create(updated_field="description",previous_value=issue.description,new_value=upd_data['description'],issue=issue)
+        if issue.type != upd_data['type']:
+           #create event
+           event_log = event_logs.objects.create(updated_field="type",previous_value=issue.type,new_value=upd_data['type'],issue=issue)
+        if issue.status != upd_data['status']:
+           #create event
+           event_log = event_logs.objects.create(updated_field="status",previous_value=issue.status,new_value=upd_data['status'],issue=issue)
+        
+        if issue.title != upd_data['title']:
+           #create event
+           event_log = event_logs.objects.create(updated_field="title",previous_value=issue.title,new_value=upd_data['title'],issue=issue)
+        if issue.assignee != upd_data['assignee']:
+           #create event
+           event_log = event_logs.objects.create(updated_field="assignee",previous_value=str(issue.assignee.id),new_value=str(upd_data['assignee'].id),issue=issue)
+        
         #avoid status and updating all other fields as we have handled status ourself in different way
         
         for k, v in upd_data.items():
+           
            if k != "status" and k != 'labels':
               setattr(issue, k, v)
            elif k == 'labels':
               for lbl in v:
                  issue.labels.add(lbl)
-               
+
         issue.save()
         status_diff = new_status-current_status
         if new_status < current_status or  status_diff in [1,0]:
@@ -114,3 +133,11 @@ class WatcherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Watcher
         fields = ('user','issue')
+
+        
+
+class event_logsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = event_logs
+        fields = ('updated_field','timestamp','previous_value','new_value','issue')
+         
