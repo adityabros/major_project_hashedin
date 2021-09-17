@@ -42,6 +42,8 @@ class IssueViewSet(viewsets.ModelViewSet):
         title = self.request.query_params.get('title', None)
         id = self.request.query_params.get('id', None)
         description = self.request.query_params.get('description', None)
+
+        
         if id:
             queryset = queryset.filter(id=id)
         elif description:
@@ -87,4 +89,3 @@ class CommentsViewSet(viewsets.ModelViewSet):
 class user_profileViewSet(viewsets.ModelViewSet):
    queryset = models.User_Profile.objects.all()
    serializer_class = serializers.user_profileSerializer
-   

@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.core.mail import BadHeaderError, send_mail
+from django.http import HttpResponse, HttpResponseRedirect
+
 class Project(models.Model):
     description = models.TextField()
     title = models.CharField(max_length=200)
@@ -76,10 +79,34 @@ class Comments(models.Model):
     updated_on = models.DateTimeField(null=True)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
 
+
+@receiver(post_save, sender=Issue)
+def create_watchers(sender, instance, created, **kwargs):
+    if created:
+        #Assignee and Reporters are default watchers
+        Watcher.objects.create(user=instance.assignee,issue=instance)
+        Watcher.objects.create(user=instance.reporter,issue=instance)
+    
+    subject = 'Watcher Testing'
+    message = 'Hi There'
+    from_email = 'aditya201196@yahoo.com'
+    print("Hello World")
+    send_mail(subject, message, from_email, ['aditya201196@yahoo.com'])
+    print("sent")
+    # try:
+    #     send_mail(subject, message, from_email, ['aditya201196@yahoo.com'])
+    # except :
+    #     pass
+    
+    
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         User_Profile.objects.create(user=instance)
+
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -87,6 +114,7 @@ def save_user_profile(sender, instance, **kwargs):
         instance.user_profile.save()
     except:
         pass
+
 
 #Event Log
 #Comment
