@@ -10,7 +10,7 @@ class getAllTestProject(TestCase):
     project_data = {
             "title": 'Dummy Project',
             "description": 'Dummy testing',
-            "creator": 2
+            "creator": 1
         }
     
     test_issue_data = {
@@ -19,9 +19,9 @@ class getAllTestProject(TestCase):
             "status":"open",
             "title":"Issue title",
             "project":2,
-            "reporter":2,
-            "assignee":2,
-            "labels":[2]
+            "reporter":1,
+            "assignee":1,
+            "labels":[]
         }
     test_label_data = {
         "name":"Test Label"
@@ -31,10 +31,18 @@ class getAllTestProject(TestCase):
         "user":2,
         "issue":1,
     }
+    client = Client()
 
+    credentials = {"username":"admin","password":"admin"}
+    
+    response = client.post('/api/token/', data=credentials, format="json")
+    
+    access_token = 'Bearer '+response.data['access']
+    
+    client = Client()
     def setUp(self):
         
-        user = User.objects.create(username="admin2",password="passsword")
+        user = User.objects.create(username="admin",password="admin")
         
         proj = models.Project.objects.create(title='Test 1', description='My first test', creator=user)
         lbl = models.Labels.objects.create(name="Dummy Label")
@@ -42,22 +50,22 @@ class getAllTestProject(TestCase):
         
     def test_all_GET(self):
         
-        client = Client()
+        client = self.client
 
         #Getting all Projects
 
-        response = client.get('/ticketing_system/project/')
+        response = client.get('/ticketing_system/project/',HTTP_AUTHORIZATION=self.access_token)
         # get data from db
         projects = models.Project.objects.all()
         serializer = serializers.ProjectSerializer(projects, many=True)
-
+        print("response data = ",response.data)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
         #Getting all Issues
 
-        response = client.get('/ticketing_system/issues/')
+        response = client.get('/ticketing_system/issues/',HTTP_AUTHORIZATION=self.access_token)
         # get data from db
         issues = models.Issue.objects.all()
         serializer = serializers.IssueSerializer(issues, many=True)
@@ -67,53 +75,64 @@ class getAllTestProject(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         #Getting all Labels
-        response = client.get('/ticketing_system/labels/')
+        response = client.get('/ticketing_system/labels/',HTTP_AUTHORIZATION=self.access_token)
         labels = models.Labels.objects.all()
         serializer = serializers.LabelSerializer(labels, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         #Getting all Watchers
-        response = client.get('/ticketing_system/watcher/')
+        response = client.get('/ticketing_system/watcher/',HTTP_AUTHORIZATION=self.access_token)
         watchers = models.Watcher.objects.all()
         serializer = serializers.WatcherSerializer(issues, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         #Getting all Users
-        response = client.get('/ticketing_system/users/')
+        response = client.get('/ticketing_system/users/',HTTP_AUTHORIZATION=self.access_token)
         users = User.objects.all()
         serializer = serializers.UserSerializer(users, many=True)
         
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
-    def test_all_POST(self):
+        #Getting all Comments
+        response = client.get('/ticketing_system/comments/',HTTP_AUTHORIZATION=self.access_token)
+        users = models.Comments.objects.all()
+        serializer = serializers.CommentsSerializer(users, many=True)
         
-        client = Client()
+        print("response comments = ",response.data)
 
-        #posting in Project
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response = client.post('/ticketing_system/project/', data=self.project_data, format="json")
+
+
+
+        #################POST Requests Test##################
+
+
+
+        response = client.post('/ticketing_system/project/', data=self.project_data, format="json",HTTP_AUTHORIZATION=self.access_token)
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+
         #posting in Issues
 
-        response = client.post('/ticketing_system/issues/', data=self.test_issue_data, format="json")
-        
+        response = client.post('/ticketing_system/issues/', data=self.test_issue_data, format="json",HTTP_AUTHORIZATION=self.access_token)
+        print("post resp get = ",response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         #posting in Labels
 
-        response = client.post('/ticketing_system/labels/', data=self.test_label_data, format="json")
+        response = client.post('/ticketing_system/labels/', data=self.test_label_data, format="json",HTTP_AUTHORIZATION=self.access_token)
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         #posting in Watcher
 
-        response = client.post('/ticketing_system/watcher/', data=self.test_watcher_data, format="json")
+        response = client.post('/ticketing_system/watcher/', data=self.test_watcher_data, format="json",HTTP_AUTHORIZATION=self.access_token)
         # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

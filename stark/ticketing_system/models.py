@@ -42,7 +42,7 @@ class Issue(models.Model):
 
     reporter = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reporting_user')
     assignee = models.ForeignKey(User, on_delete=models.PROTECT, related_name='assigned_user')
-    labels = models.ManyToManyField(Labels)
+    labels = models.ManyToManyField(Labels,null=True)
 
 
 class User_Profile(models.Model):
