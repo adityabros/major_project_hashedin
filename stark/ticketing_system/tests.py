@@ -26,11 +26,40 @@ class getAllTestProject(TestCase):
     test_label_data = {
         "name":"Test Label"
     } 
+    test_label_upd_data = {
+        "name":"Test Label Updated"
+    } 
 
     test_watcher_data = {
         "user":1,
         "issue":1,
     }
+
+    project_upd_data = {
+            "title": 'Dummy Project',
+            "description": 'Dummy testing',
+            
+        }
+    
+    test_upd_issue_data = {
+            "type":"TASK",
+            "description":"My Issue changed",
+            "status":"in_progress",
+            "title":"Issue title test",
+            "project":1,
+            "reporter":1,
+            "assignee":1,
+            "labels":[]
+        }
+
+    
+    test_comment_data = {
+        "author":1,
+        "text":"This is a good issue",
+        "issue":1
+    }
+
+
     client = Client()
 
     credentials = {"username":"admin","password":"admin"}
@@ -135,6 +164,46 @@ class getAllTestProject(TestCase):
         response = client.post('/ticketing_system/watcher/', data=self.test_watcher_data, format="json",HTTP_AUTHORIZATION=self.access_token)
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #posting in Comments
+
+        response = client.post('/ticketing_system/comments/', data=self.test_comment_data, format="json",HTTP_AUTHORIZATION=self.access_token)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+
+        ############## Updation Test Cases #############
+
+        #update for Project
+
+        response = client.put('/ticketing_system/project/1/',  data=self.project_upd_data,content_type='application/json' ,format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+        #Update for Labels
+        response = client.put('/ticketing_system/labels/1/',  data=self.test_label_upd_data,content_type='application/json' ,format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+        #Update for Issue
+        response = client.put('/ticketing_system/issues/1/',  data=self.test_upd_issue_data,content_type='application/json' ,format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        #Update for Watcher
+        response = client.put('/ticketing_system/watcher/1/',  data=self.test_watcher_data,content_type='application/json' ,format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        #Update for Comments
+        response = client.put('/ticketing_system/comments/1/',  data=self.test_comment_data,content_type='application/json' ,format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
 
 
         ################ Deleting Test Cases ############
