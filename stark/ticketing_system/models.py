@@ -71,6 +71,20 @@ class event_logs(models.Model):
     new_value = models.CharField(max_length=20)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
 
+@receiver(post_save, sender=event_logs)
+def track_events(sender, instance, created, **kwargs):
+
+    subject = 'Event {} for Issue : {} changed'.format(instance.updated_field,instance.issue.title)
+    message = 'Old Value : {} , New Value : {}'.format(instance.previous_value,instance.new_value)
+    from_email = 'aditya201196@yahoo.com'
+    watchers = Watcher.objects.filter(issue=instance.issue)
+    email_ids = [w.user.email for w in watchers]
+    
+    try:
+        send_mail(subject, message, from_email, email_ids+['aditya201196@yahoo.com'])
+    except :
+        pass
+
 class Comments(models.Model):
     
     author = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -87,18 +101,7 @@ def create_watchers(sender, instance, created, **kwargs):
         Watcher.objects.create(user=instance.assignee,issue=instance)
         Watcher.objects.create(user=instance.reporter,issue=instance)
     
-    subject = 'Watcher Testing'
-    message = 'Hi There'
-    from_email = 'aditya201196@yahoo.com'
-    print("Hello World")
-    send_mail(subject, message, from_email, ['aditya201196@yahoo.com'])
-    print("sent")
-    # try:
-    #     send_mail(subject, message, from_email, ['aditya201196@yahoo.com'])
-    # except :
-    #     pass
-    
-    
+
 
 
 @receiver(post_save, sender=User)
