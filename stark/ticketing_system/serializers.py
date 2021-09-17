@@ -74,6 +74,12 @@ class UpdateIssueSerializer(serializers.ModelSerializer):
         model = Issue
         fields = ('id','description', 'type', 'status','title','project','reporter','assignee','labels')
 
+class TimeLogSerializer(serializers.ModelSerializer):
+     
+    class Meta:
+        model = TimeLog
+        fields = ('user', 'issue','time_taken','work_description')
+
 class ProjectSerializer(serializers.ModelSerializer):
    issues = IssueSerializer(many=True,read_only=True)
 
@@ -150,6 +156,10 @@ class WatcherSerializer(serializers.ModelSerializer):
         model = Watcher
         fields = ('user','issue')
 
+class WatcherProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatcherProject
+        fields = ('user','project')
         
 
 class event_logsSerializer(serializers.ModelSerializer):

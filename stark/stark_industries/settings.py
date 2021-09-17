@@ -40,6 +40,11 @@ INSTALLED_APPS = [
     'ticketing_system',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_crontab',
+]
+
+CRONJOBS = [
+    ('*/5 * * * *', 'ticketing_system.cronjob.my_scheduled_job')
 ]
 
 MIDDLEWARE = [
@@ -189,4 +194,5 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'aditya201196@yahoo.com'
 EMAIL_HOST_PASSWORD = 'yblblksjanrzgxml'
+
 

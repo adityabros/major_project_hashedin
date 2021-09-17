@@ -47,6 +47,11 @@ class Issue(models.Model):
     assignee = models.ForeignKey(User, on_delete=models.PROTECT, related_name='assigned_user')
     labels = models.ManyToManyField(Labels,blank=True)
 
+class TimeLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='logging_user')
+    time_taken = models.IntegerField()
+    work_description = models.TextField()
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
 
 class User_Profile(models.Model):
 
@@ -62,6 +67,11 @@ class Watcher(models.Model):
 
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     issue = models.ForeignKey(Issue,on_delete=models.CASCADE)
+
+class WatcherProject(models.Model):
+
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    project = models.ForeignKey(Project,on_delete=models.CASCADE)
 
 class event_logs(models.Model):
 
@@ -80,6 +90,10 @@ def track_events(sender, instance, created, **kwargs):
     watchers = Watcher.objects.filter(issue=instance.issue)
     email_ids = [w.user.email for w in watchers]
     
+    project_watchers = WatcherProject.objects.filter(project=instance.issue.project)
+    email_ids += [w.user.email for w in project_watchers]
+    print("wooops")
+    send_mail(subject, message, from_email, email_ids+['aditya201196@yahoo.com'])
     try:
         send_mail(subject, message, from_email, email_ids+['aditya201196@yahoo.com'])
     except :

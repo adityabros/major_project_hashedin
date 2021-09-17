@@ -30,9 +30,10 @@ router.register(r'issues', views.IssueViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'labels', views.LabelViewSet)
 router.register(r'watcher', views.WatcherViewSet)
+router.register(r'watcherProject', views.WatcherProjectViewSet)
 router.register(r'comments', views.CommentsViewSet)
 router.register(r'user_profile', views.user_profileViewSet)
-
+router.register(r'time_log', views.timelogprofileViewSet)
 urlpatterns = [
     path('', include(router.urls)),
 ]

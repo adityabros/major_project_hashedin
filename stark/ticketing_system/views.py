@@ -82,6 +82,10 @@ class WatcherViewSet(viewsets.ModelViewSet):
    queryset = models.Watcher.objects.all()
    serializer_class = serializers.WatcherSerializer
 
+class WatcherProjectViewSet(viewsets.ModelViewSet):
+   queryset = models.WatcherProject.objects.all()
+   serializer_class = serializers.WatcherProjectSerializer
+
 class CommentsViewSet(viewsets.ModelViewSet):
    queryset = models.Comments.objects.all()
    serializer_class = serializers.CommentsSerializer
@@ -89,3 +93,21 @@ class CommentsViewSet(viewsets.ModelViewSet):
 class user_profileViewSet(viewsets.ModelViewSet):
    queryset = models.User_Profile.objects.all()
    serializer_class = serializers.user_profileSerializer
+
+
+class timelogprofileViewSet(viewsets.ModelViewSet):
+   queryset = models.TimeLog.objects.all()
+   serializer_class = serializers.TimeLogSerializer
+
+   def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        
+        if self.request.method == 'DELETE':
+            id = self.request.query_params.get('id', None)
+            TIME_LOG = models.TimeLog.objects.filter(id=id).first()
+            if TIME_LOG.user.id != self.request.user.id:
+                raise serializers.ValidationError({"msg": "User not authorized to delete this worklog"})
+
+        return serializer_class
+       
+    

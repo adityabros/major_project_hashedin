@@ -5,3 +5,5 @@ WORKDIR /code
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
+# RUN apt-get install -y cron
+RUN apt-get update && apt-get -y install cron
