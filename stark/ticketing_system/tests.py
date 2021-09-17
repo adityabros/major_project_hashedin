@@ -18,7 +18,7 @@ class getAllTestProject(TestCase):
             "description":"My first Issue test",
             "status":"open",
             "title":"Issue title",
-            "project":2,
+            "project":1,
             "reporter":1,
             "assignee":1,
             "labels":[]
@@ -28,7 +28,7 @@ class getAllTestProject(TestCase):
     } 
 
     test_watcher_data = {
-        "user":2,
+        "user":1,
         "issue":1,
     }
     client = Client()
@@ -133,7 +133,7 @@ class getAllTestProject(TestCase):
         #posting in Watcher
 
         response = client.post('/ticketing_system/watcher/', data=self.test_watcher_data, format="json",HTTP_AUTHORIZATION=self.access_token)
-        # print(response.data)
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
  
