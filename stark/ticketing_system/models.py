@@ -38,7 +38,7 @@ class Issue(models.Model):
     status = models.CharField(choices=issue_status,max_length=15,default='open')
     title = models.CharField(max_length=200)
 
-    project = models.ForeignKey(Project, on_delete=models.PROTECT,related_name='issues')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE,related_name='issues')
 
     reporter = models.ForeignKey(User, on_delete=models.PROTECT, related_name='reporting_user')
     assignee = models.ForeignKey(User, on_delete=models.PROTECT, related_name='assigned_user')

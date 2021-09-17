@@ -10,6 +10,7 @@ from .models import *
 
 
 class IssueSerializer(serializers.ModelSerializer):
+   
    class Meta:
        model = Issue
        fields = ('id','description', 'type', 'status','title','project','reporter','assignee','labels')

@@ -136,6 +136,38 @@ class getAllTestProject(TestCase):
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+
+        ################ Deleting Test Cases ############
+
+
+        
+        #Delete for Watcher
+
+        response = client.delete('/ticketing_system/watcher/1/', format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        #Delete for Issues
+
+        response = client.delete('/ticketing_system/issues/1/', format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        #Delete for Projects
+
+        response = client.delete('/ticketing_system/project/1/', format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        #Delete for Labels
+
+        response = client.delete('/ticketing_system/labels/1/', format="json",HTTP_AUTHORIZATION=self.access_token)
+        
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+
+
  
 
 
